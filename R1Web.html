@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>R1 COSMETIC - جوانی و سەرنجراکێشی</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter & Noto Kufi Arabic -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Kufi+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Noto Kufi Arabic"', 'sans-serif'],
+                    },
+                    colors: {
+                        r1pink: {
+                            50: '#fdf2f4',
+                            100: '#fbe7eb',
+                            500: '#e0567a',
+                            600: '#cd3d63',
+                            700: '#ab2d4f',
+                        },
+                        r1gold: {
+                            light: '#fef3c7',
+                            DEFAULT: '#d4af37',
+                            dark: '#aa8c2c',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Noto Kufi Arabic', sans-serif;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e0567a;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Navigation Header -->
+    <header class="bg-white shadow-md sticky top-0 z-40 border-b border-r1pink-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="w-12 h-12 bg-gradient-to-tr from-r1pink-600 to-r1gold rounded-full flex items-center justify-center text-white shadow-lg">
+                    <i class="fa-solid fa-gem text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold bg-gradient-to-r from-r1pink-600 to-r1gold bg-clip-text text-transparent tracking-wide">R1 COSMETIC</h1>
+                    <p class="text-xs text-gray-500">جوانکاری و کەرەستەی ئەسڵی</p>
+                </div>
+            </div>
+
+            <div class="hidden md:flex flex-1 max-w-md mx-8">
+                <div class="relative w-full">
+                    <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+                        <i class="fa-solid fa-search"></i>
+                    </span>
+                    <input type="text" id="searchInput" oninput="handleSearch(this.value)" placeholder="لێگەڕینا ئایتما..." class="w-full pl-4 pr-10 py-2.5 bg-gray-100 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-r1pink-500 focus:bg-white text-sm transition">
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <button onclick="promptAdminLogin()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full text-sm font-medium flex items-center gap-2 transition shadow-sm">
+                    <i class="fa-solid fa-user-gear text-r1pink-600"></i>
+                    <span id="adminToggleText">رێڤەبەر (Admin)</span>
+                </button>
+
+                <button onclick="toggleCartModal()" class="relative px-4 py-2 bg-r1pink-600 hover:bg-r1pink-700 text-white rounded-full text-sm font-medium flex items-center gap-2 transition shadow-md">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span>کارت</span>
+                    <span id="cartBadge" class="absolute -top-1 -right-1 bg-r1gold text-white font-bold text-xs w-5 h-5 rounded-full flex items-center justify-center shadow">0</span>
+                </button>
+            </div>
+        </div>
+        <div class="md:hidden px-4 pb-3">
+            <div class="relative w-full">
+                <span class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-gray-400">
+                    <i class="fa-solid fa-search"></i>
+                </span>
+                <input type="text" oninput="handleSearch(this.value)" placeholder="لێگەڕینا ئایتما..." class="w-full pl-4 pr-10 py-2 bg-gray-100 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-r1pink-500 text-sm">
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+
+        <div id="toast" class="fixed bottom-5 left-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-gray-900 text-white px-6 py-3 rounded-xl shadow-2xl flex items-center gap-3">
+            <i id="toastIcon" class="fa-solid fa-circle-check text-green-400 text-lg"></i>
+            <span id="toastMessage" class="text-sm font-medium">پەیام</span>
+        </div>
+
+        <!-- STOREFRONT SECTION -->
+        <section id="storefrontSection">
+            <div class="relative bg-gradient-to-r from-r1pink-600 via-r1pink-500 to-r1gold rounded-3xl p-8 md:p-12 text-white mb-10 overflow-hidden shadow-xl">
+                <div class="absolute -left-10 -bottom-10 w-64 h-64 bg-white/10 rounded-full blur-2xl"></div>
+                <div class="relative z-10 max-w-2xl">
+                    <span class="bg-white/20 text-white text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider">نووترین بەرهەمێن جوانکاریێ</span>
+                    <h2 class="text-3xl md:text-5xl font-extrabold mt-3 mb-4 leading-tight">جوانیا خۆ ب R1 COSMETIC پتر بڕازینە</h2>
+                    <p class="text-white/90 text-sm md:text-base mb-6">باشترین و ئاستبلندترین کەرەستەیێن مایک ئەپ و جوانکاریێ ب کوالیتیا بلند و ب نرخێن گونجای بۆ تە.</p>
+                    <a href="#productsGrid" class="bg-white text-r1pink-600 px-6 py-3 rounded-full font-bold text-sm shadow-lg hover:bg-r1pink-50 transition inline-flex items-center gap-2">
+                        <span>سەردانا بەرهەمان بکە</span>
+                        <i class="fa-solid fa-arrow-down"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <i class="fa-solid fa-spray-can-sparkles text-r1pink-600"></i>
+                    <span>بەرهەمێن بەردەست</span>
+                </h3>
+                <span id="productCount" class="text-sm text-gray-500 font-medium">0 بەرهەم</span>
+            </div>
+
+            <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+        </section>
+
+        <!-- ADMIN PANEL SECTION -->
+        <section id="adminSection" class="hidden">
+            <div class="bg-white rounded-2xl shadow-xl border border-gray-100 p-6 md:p-8 mb-8">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-gray-100 gap-4">
+                    <div>
+                        <h3 class="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                            <i class="fa-solid fa-shield-halved text-r1pink-600"></i>
+                            <span>پشکا ڕێڤەبەریێ (Admin Panel)</span>
+                        </h3>
+                        <p class="text-gray-500 text-sm mt-1">ل ڤێرە تو دشێی بەرهەمێن نوو زێدە بکەی، یان یێن کەڤن گۆهۆڕی یان ژێ ببەی.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <button onclick="openProductModal()" class="bg-r1pink-600 hover:bg-r1pink-700 text-white px-5 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 transition shadow-md">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>بەرهەمەکێ نوو زێدە بکە</span>
+                        </button>
+                        <button onclick="exitAdminPanel()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2.5 rounded-xl font-medium text-sm flex items-center gap-2 transition">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                            <span>دەرکەتن</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto mt-6">
+                    <table class="w-full text-right border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider border-b border-gray-200">
+                                <th class="py-3.5 px-4 font-semibold">وێنە</th>
+                                <th class="py-3.5 px-4 font-semibold">ناڤێ بەرهەمی</th>
+                                <th class="py-3.5 px-4 font-semibold">نرخ (IQD)</th>
+                                <th class="py-3.5 px-4 font-semibold">پێناسە</th>
+                                <th class="py-3.5 px-4 font-semibold text-center">کردار</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminProductsTableBody" class="divide-y divide-gray-100 text-sm"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- CART & CHECKOUT MODAL -->
+    <div id="cartModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-gradient-to-r from-r1pink-600 to-r1gold p-5 text-white flex items-center justify-between">
+                <h3 class="text-lg font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-cart-shopping"></i>
+                    <span>کارتما تە و چیک ئاوت</span>
+                </h3>
+                <button onclick="toggleCartModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="p-6 overflow-y-auto space-y-6 flex-grow">
+                <div>
+                    <h4 class="text-sm font-bold text-gray-700 mb-3">ئایتما د کارتێ دایە:</h4>
+                    <div id="cartItemsList" class="divide-y divide-gray-100 max-h-52 overflow-y-auto bg-gray-50 rounded-2xl p-3 border border-gray-100"></div>
+                </div>
+
+                <div class="bg-r1pink-50 p-4 rounded-2xl flex items-center justify-between border border-r1pink-100">
+                    <span class="font-bold text-gray-700">گشتیی نرخ:</span>
+                    <span id="cartTotalPrice" class="text-xl font-extrabold text-r1pink-600">0 IQD</span>
+                </div>
+
+                <form id="checkoutForm" onsubmit="submitOrder(event)" class="space-y-4 pt-2 border-t border-gray-100">
+                    <h4 class="text-sm font-bold text-gray-700">زانیاریێن کڕیاری بۆ هنارتنێ:</h4>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">ناڤێ تە (ناڤ):</label>
+                            <input type="text" id="custName" required placeholder="بۆ نموونە: ئاحمد" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-r1pink-500 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">ناڤێ بابێ:</label>
+                            <input type="text" id="custFatherName" required placeholder="بۆ نموونە: محەمەد" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-r1pink-500 text-sm">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">ژمارا تەلەفۆنێ (واتسئەپ):</label>
+                        <div class="flex gap-2">
+                            <select id="countryCodeSelect" class="w-36 px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-r1pink-500 text-sm font-medium">
+                                <option value="964" selected>🇮🇶 Iraq +964</option>
+                                <option value="971">🇦🇪 UAE +971</option>
+                                <option value="966">🇸🇦 KSA +966</option>
+                                <option value="90">🇹🇷 Turkey +90</option>
+                            </select>
+                            <input type="tel" id="custPhone" required placeholder="7501234567" class="flex-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-r1pink-500 text-sm">
+                        </div>
+                        <p class="text-[11px] text-gray-400 mt-1">ژمارا خۆ بێ سفرا سەرێ بنڤیسە، وەک 750... یان 751...</p>
+                    </div>
+
+                    <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-green-600 to-green-500 hover:from-green-700 hover:to-green-600 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-base">
+                        <i class="fa-brands fa-whatsapp text-xl"></i>
+                        <span>ناردنا داخوازێ ڕاستەوخۆ بۆ واتسئەپ</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD / EDIT PRODUCT MODAL -->
+    <div id="productModal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden">
+            <div class="bg-gradient-to-r from-r1pink-600 to-r1gold p-5 text-white flex items-center justify-between">
+                <h3 id="productModalTitle" class="text-lg font-bold flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle"></i>
+                    <span>زێدەکرنا بەرهەمەکێ نوو</span>
+                </h3>
+                <button onclick="closeProductModal()" class="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="productForm" onsubmit="saveProduct(event)" class="p-6 space-y-4">
+                <input type="hidden" id="editProductId">
+                
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">ناڤێ بەرهەمی:</label>
+                    <input type="text" id="prodName" required placeholder="بۆ نموونە: رۆژ ڤێلڤێت مایک ئەپ" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-r1pink-500 text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">نرخ (بە دینارێ عێراقی IQD):</label>
+                    <input type="number" id="prodPrice" required placeholder="25000" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-r1pink-500 text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">لينکا وێنەیێ بەرهەمی (Image URL):</label>
+                    <input type="url" id="prodImage" required placeholder="https://placehold.co/400x400/e0567a/ffffff?text=Product" class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-r1pink-500 text-sm">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">پێناسەکا کورت (Description):</label>
+                    <textarea id="prodDesc" rows="3" placeholder="باسا بەرهەمی ب کورتەی..." class="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-r1pink-500 text-sm"></textarea>
+                </div>
+
+                <div class="pt-2">
+                    <button type="submit" class="w-full py-3 bg-r1pink-600 hover:bg-r1pink-700 text-white font-bold rounded-xl shadow-md transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-check"></i>
+                        <span>تۆمارکرن و هشکەستن</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-16 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <div class="flex items-center justify-center space-x-2 space-x-reverse mb-3">
+                <div class="w-8 h-8 bg-r1pink-600 rounded-full flex items-center justify-center text-white">
+                    <i class="fa-solid fa-gem text-xs"></i>
+                </div>
+                <span class="font-bold text-lg bg-gradient-to-r from-r1pink-600 to-r1gold bg-clip-text text-transparent">R1 COSMETIC</span>
+            </div>
+            <p class="text-sm text-gray-500">هەمی ماف پارێزراون © 2026 | دروستکرییە ب دەستێ سستەمێ زیرەک بۆ فڕۆتنا تە.</p>
+        </div>
+    </footer>
+
+    <!-- Application JavaScript Logic -->
+    <script>
+        // ژمارا واتسئەپا خوە ل ڤێرە بنڤیسە بێ نیشانا + (بۆ نموونە 9647501234567)
+        const STORE_OWNER_WHATSAPP = "96407517741272"; 
+
+        // پاسووردا پشکا ئادمینێ (تشارەکی بگۆهوڕە ئەگەر دڤێت)
+        const ADMIN_PASSWORD = "9077";
+
+        const defaultProducts = [
+            {
+                id: 1,
+                name: "رۆژێ لێڤان ئەسڵی (Matte Lipstick)",
+                price: 15000,
+                image: "https://placehold.co/400x400/e0567a/ffffff?text=Lipstick",
+                desc: "رۆژێ بێ زەرەر، بەرگرییا بلند و نەرم بۆ لێڤان بۆ دەمێ 24 دەمژمێران."
+            },
+            {
+                id: 2,
+                name: "فاوندەشن (Liquid Foundation)",
+                price: 28000,
+                image: "https://placehold.co/400x400/d4af37/ffffff?text=Foundation",
+                desc: "ساخکەر و داپۆشەرێ کەموکوڕیێن پێستی ب رەنگەکێ سروشتی."
+            }
+        ];
+
+        let products = JSON.parse(localStorage.getItem('r1_products')) || defaultProducts;
+        let cart = JSON.parse(localStorage.getItem('r1_cart')) || [];
+        let searchQuery = "";
+        let isAdminView = false;
+
+        function saveToLocalStorage() {
+            localStorage.setItem('r1_products', JSON.stringify(products));
+            localStorage.setItem('r1_cart', JSON.stringify(cart));
+        }
+
+        window.onload = function() {
+            renderProducts();
+            updateCartUI();
+        };
+
+        function renderProducts() {
+            const grid = document.getElementById('productsGrid');
+            const countEl = document.getElementById('productCount');
+            
+            const filtered = products.filter(p => 
+                p.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                p.desc.toLowerCase().includes(searchQuery.toLowerCase())
+            );
+
+            countEl.innerText = `${filtered.length} بەرهەم`;
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center text-gray-400">
+                        <i class="fa-solid fa-box-open text-4xl mb-3"></i>
+                        <p class="text-base font-medium">هیچ بەرهەمەک نەهاتە دیتن.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(p => `
+                <div class="bg-white rounded-2xl shadow-sm hover:shadow-xl border border-gray-100 overflow-hidden flex flex-col justify-between transition group">
+                    <div>
+                        <div class="relative overflow-hidden aspect-square bg-gray-100">
+                            <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='https://placehold.co/400x400/e0567a/ffffff?text=R1+Cosmetic'">
+                            <span class="absolute top-3 right-3 bg-white/90 backdrop-blur-md text-r1pink-600 font-extrabold text-xs px-2.5 py-1 rounded-full shadow">
+                                ${p.price.toLocaleString()} IQD
+                            </span>
+                        </div>
+                        <div class="p-5">
+                            <h4 class="font-bold text-gray-900 text-base mb-1 line-clamp-1">${p.name}</h4>
+                            <p class="text-gray-500 text-xs line-clamp-2 mb-4">${p.desc}</p>
+                        </div>
+                    </div>
+                    <div class="p-5 pt-0">
+                        <button onclick="addToCart(${p.id})" class="w-full py-2.5 bg-r1pink-50 hover:bg-r1pink-600 text-r1pink-600 hover:text-white font-bold rounded-xl text-sm transition flex items-center justify-center gap-2 border border-r1pink-100">
+                            <i class="fa-solid fa-cart-plus"></i>
+                            <span>زێدەکرن بۆ کارتێ</span>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function handleSearch(val) {
+            searchQuery = val;
+            renderProducts();
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+
+            const existing = cart.find(item => item.id === productId);
+            if (existing) {
+                existing.qty += 1;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+
+            saveToLocalStorage();
+            updateCartUI();
+            showToast(`"${product.name}" بۆ کارتێ هاتە زێدەکرن!`, "success");
+        }
+
+        function updateCartUI() {
+            const badge = document.getElementById('cartBadge');
+            const totalCount = cart.reduce((sum, item) => sum + item.qty, 0);
+            badge.innerText = totalCount;
+
+            const cartList = document.getElementById('cartItemsList');
+            const totalPriceEl = document.getElementById('cartTotalPrice');
+
+            let total = 0;
+
+            if (cart.length === 0) {
+                cartList.innerHTML = `<p class="text-center text-gray-400 py-6 text-sm">کارتما تە ڤالا یە.</p>`;
+                totalPriceEl.innerText = `0 IQD`;
+                return;
+            }
+
+            cartList.innerHTML = cart.map((item, index) => {
+                total += item.price * item.qty;
+                return `
+                    <div class="flex items-center justify-between py-3 px-2">
+                        <div class="flex items-center gap-3">
+                            <img src="${item.image}" alt="${item.name}" class="w-12 h-12 rounded-xl object-cover" onerror="this.src='https://placehold.co/100x100/e0567a/ffffff?text=Item'">
+                            <div>
+                                <h5 class="font-bold text-gray-800 text-xs line-clamp-1">${item.name}</h5>
+                                <span class="text-xs text-r1pink-600 font-semibold">${item.price.toLocaleString()} IQD</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center bg-white border border-gray-200 rounded-lg overflow-hidden shadow-xs">
+                                <button onclick="changeQty(${index}, -1)" class="px-2 py-1 bg-gray-50 hover:bg-gray-100 text-gray-600 text-xs font-bold transition">-</button>
+                                <span class="px-3 text-xs font-bold text-gray-800">${item.qty}</span>
+                                <button onclick="changeQty(${index}, 1)" class="px-2 py-1 bg-gray-50 hover:bg-gray-100 text-gray-600 text-xs font-bold transition">+</button>
+                            </div>
+                            <button onclick="removeFromCart(${index})" class="text-red-500 hover:text-red-700 text-sm p-1 transition">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            totalPriceEl.innerText = `${total.toLocaleString()} IQD`;
+        }
+
+        function changeQty(index, delta) {
+            cart[index].qty += delta;
+            if (cart[index].qty <= 0) {
+                cart.splice(index, 1);
+            }
+            saveToLocalStorage();
+            updateCartUI();
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            saveToLocalStorage();
+            updateCartUI();
+            showToast("ئایتم ژ کارتێ هاتە لادان.", "info");
+        }
+
+        function toggleCartModal() {
+            const modal = document.getElementById('cartModal');
+            modal.classList.toggle('hidden');
+            updateCartUI();
+        }
+
+        function submitOrder(e) {
+            e.preventDefault();
+
+            if (cart.length === 0) {
+                showToast("کارتما تە ڤالا یە.", "error");
+                return;
+            }
+
+            const custName = document.getElementById('custName').value.trim();
+            const custFatherName = document.getElementById('custFatherName').value.trim();
+            const countryCode = document.getElementById('countryCodeSelect').value;
+            let rawPhone = document.getElementById('custPhone').value.trim();
+
+            if (rawPhone.startsWith('0')) {
+                rawPhone = rawPhone.substring(1);
+            }
+
+            const fullPhone = `${countryCode}${rawPhone}`;
+
+            let orderText = `🛒 *داخوازەکا نوو بۆ R1 COSMETIC*%0A%0A`;
+            orderText += `👤 *زانیاریێن کڕیاری:*%0A`;
+            orderText += `• ناڤ: ${custName}%0A`;
+            orderText += `• ناڤێ بابێ: ${custFatherName}%0A`;
+            orderText += `• ژمارا تەلەفۆنێ: +${fullPhone}%0A%0A`;
+            orderText += `📦 *لستا ئایتما:*%0A`;
+
+            let grandTotal = 0;
+            cart.forEach((item, i) => {
+                const itemTotal = item.price * item.qty;
+                grandTotal += itemTotal;
+                orderText += `${i+1}. ${item.name} | قەبارە: ${item.qty} | نرخ: ${itemTotal.toLocaleString()} IQD%0A`;
+            });
+
+            orderText += `%0A💰 *گشتیی نرخ: ${grandTotal.toLocaleString()} IQD*`;
+            orderText += `%0A%0A سپاس بۆ کڕینا وە! ✨`;
+
+            const whatsappUrl = `https://wa.me/${STORE_OWNER_WHATSAPP}?text=${orderText}`;
+            window.location.href = whatsappUrl;
+
+            cart = [];
+            saveToLocalStorage();
+            updateCartUI();
+            toggleCartModal();
+            showToast("داخوازا تە بەرفروشک ب ڕێکا واتسئەپ هاتە هنارتن!", "success");
+        }
+
+        function promptAdminLogin() {
+            if (isAdminView) {
+                exitAdminPanel();
+                return;
+            }
+
+            const pwd = prompt("پاسووردا پشکا ئادمینێ بنڤیسە:");
+            if (pwd === null) return;
+
+            if (pwd === ADMIN_PASSWORD) {
+                isAdminView = true;
+                const storefront = document.getElementById('storefrontSection');
+                const adminSec = document.getElementById('adminSection');
+                const toggleText = document.getElementById('adminToggleText');
+
+                storefront.classList.add('hidden');
+                adminSec.classList.remove('hidden');
+                toggleText.innerText = "فڕۆشگە (Store)";
+                renderAdminProducts();
+                showToast("ب سەرکەفتن هاتە ژوور!", "success");
+            } else {
+                showToast("پاسوورد هەڵە یە!", "error");
+            }
+        }
+
+        function exitAdminPanel() {
+            isAdminView = false;
+            const storefront = document.getElementById('storefrontSection');
+            const adminSec = document.getElementById('adminSection');
+            const toggleText = document.getElementById('adminToggleText');
+
+            storefront.classList.remove('hidden');
+            adminSec.classList.add('hidden');
+            toggleText.innerText = "رێڤەبەر (Admin)";
+            renderProducts();
+        }
+
+        function renderAdminProducts() {
+            const tbody = document.getElementById('adminProductsTableBody');
+            if (products.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-gray-400">هیچ بەرهەمەک نینە.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = products.map(p => `
+                <tr class="hover:bg-gray-50/50 transition">
+                    <td class="py-3 px-4">
+                        <img src="${p.image}" alt="" class="w-10 h-10 rounded-lg object-cover" onerror="this.src='https://placehold.co/100x100/e0567a/ffffff?text=Img'">
+                    </td>
+                    <td class="py-3 px-4 font-bold text-gray-800">${p.name}</td>
+                    <td class="py-3 px-4 text-r1pink-600 font-semibold">${p.price.toLocaleString()} IQD</td>
+                    <td class="py-3 px-4 text-gray-500 text-xs max-w-xs truncate">${p.desc}</td>
+                    <td class="py-3 px-4 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="openEditProductModal(${p.id})" class="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg transition" title="دەستکاری">
+                                <i class="fa-solid fa-pen-to-square"></i>
+                            </button>
+                            <button onclick="deleteProduct(${p.id})" class="p-2 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg transition" title="ژێبرن">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openProductModal() {
+            document.getElementById('productModalTitle').innerHTML = `<i class="fa-solid fa-plus-circle"></i><span>زێدەکرنا بەرهەمەکێ نوو</span>`;
+            document.getElementById('productForm').reset();
+            document.getElementById('editProductId').value = "";
+            document.getElementById('productModal').classList.remove('hidden');
+        }
+
+        function openEditProductModal(id) {
+            const p = products.find(item => item.id === id);
+            if (!p) return;
+
+            document.getElementById('productModalTitle').innerHTML = `<i class="fa-solid fa-pen-to-square"></i><span>دەستکاریکرنا بەرهەمی</span>`;
+            document.getElementById('editProductId').value = p.id;
+            document.getElementById('prodName').value = p.name;
+            document.getElementById('prodPrice').value = p.price;
+            document.getElementById('prodImage').value = p.image;
+            document.getElementById('prodDesc').value = p.desc;
+            document.getElementById('productModal').classList.remove('hidden');
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').classList.add('hidden');
+        }
+
+        function saveProduct(e) {
+            e.preventDefault();
+            const editId = document.getElementById('editProductId').value;
+            const name = document.getElementById('prodName').value;
+            const price = Number(document.getElementById('prodPrice').value);
+            const image = document.getElementById('prodImage').value;
+            const desc = document.getElementById('prodDesc').value;
+
+            if (editId) {
+                const index = products.findIndex(p => p.id == editId);
+                if (index !== -1) {
+                    products[index] = { id: Number(editId), name, price, image, desc };
+                    showToast("بەرهەم ب سەرکەفتن هاتە نووکرن!", "success");
+                }
+            } else {
+                const newId = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
+                products.push({ id: newId, name, price, image, desc });
+                showToast("بەرهەمێ نوو ب سەرکەفتن هاتە زێدەکرن!", "success");
+            }
+
+            saveToLocalStorage();
+            closeProductModal();
+            renderAdminProducts();
+            renderProducts();
+        }
+
+        function deleteProduct(id) {
+            if (confirm("تە دڤێت ئەڤ بەرهەمه ژێ ببەی؟")) {
+                products = products.filter(p => p.id !== id);
+                saveToLocalStorage();
+                renderAdminProducts();
+                renderProducts();
+                showToast("بەرهەم هاتە ژێبرن.", "info");
+            }
+        }
+
+        function showToast(message, type = "success") {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toastMessage');
+            const iconEl = document.getElementById('toastIcon');
+
+            msgEl.innerText = message;
+            if (type === "success") {
+                iconEl.className = "fa-solid fa-circle-check text-green-400 text-lg";
+            } else if (type === "error") {
+                iconEl.className = "fa-solid fa-circle-exclamation text-red-400 text-lg";
+            } else {
+                iconEl.className = "fa-solid fa-circle-info text-blue-400 text-lg";
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
